@@ -136,7 +136,7 @@ delay ( unsigned int milisec )
 int
 bp_thread(void* period_arg) {
     // button
-    int period = (int) *perdiod_arg;
+    int period = *((int *) period_arg);
     int bounce_period = 100;
     int old_val = 1; // default button released
     int val = 1;
@@ -173,7 +173,7 @@ bp_thread(void* period_arg) {
 int
 bp_threadv2(void* period_arg) {
     // button
-    int period = (int) *perdiod_arg;
+    int period = *((int *) period_arg);
     int old_val = 1; // default button released
     int val = 1;
     int led_val = 0;
@@ -230,13 +230,13 @@ main ( int argc, char **argv )
     // Reading button's value
     // ---------------------------------------------
 
-    pthread_t* thd;
-    if (pthread_create(thd, NULL, bp_thread, (void*) &period) == EAGAIN){
+    pthread_t thd;
+    if (pthread_create(&thd, NULL, bp_thread, (void*) &period) < 0){
         printf("-- error: cannot create thread.\n");
         exit(1);
     }
 
-    pthread_join(thd, 0);
+    pthread_join(thd, NULL);
 
     gpio_munmap(gpio_regs_virt);
 
